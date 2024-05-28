@@ -1,6 +1,7 @@
 package com.example.services;
 
 import java.util.List;
+
 import java.util.Optional;
 
 import com.example.model.Tapa;
@@ -15,4 +16,6 @@ public interface TapaServices {
 	void delete(Long id);				// D
 	
 	List<Tapa> getAll();
+	
+	List<Tapa> getBetweenPriceRange(double min, double max);
 }

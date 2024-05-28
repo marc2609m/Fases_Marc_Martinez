@@ -1,6 +1,7 @@
 package com.example.controller;
 
 import java.net.URI;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import com.example.config.PresentationException;
 import com.example.model.Tapa;
 import com.example.services.TapaServices;
 
@@ -30,19 +32,28 @@ public class TapaController {
 	private TapaServices tapaServices;
 	
 	@GetMapping
-	public List<Tapa> getAll(){
+	public List<Tapa> getAll(@RequestParam(name = "min", required = false) Double min, 
+			 @RequestParam(name = "max", required = false) Double max){
 		
-		List<Tapa> productos = null;
+		List<Tapa> tapas = null;
 
-		tapaServices.getAll();
+		if(min != null && max != null) {
+			tapas = tapaServices.getBetweenPriceRange(min, max);
+		} else {
+			tapas = tapaServices.getAll();
+		}
 			
-		return productos;
+		return tapas;
 	}
 		
 	@GetMapping("/{id}")
 	public Tapa read(@PathVariable Long id) {
 		
 		Optional<Tapa> optional = tapaServices.read(id);
+		
+		if(!optional.isPresent()) {
+			throw new PresentationException("No se encuentra el producto con id " + id, HttpStatus.NOT_FOUND);
+		}
 		
 		return optional.get();
 	}
@@ -52,7 +63,11 @@ public class TapaController {
 		
 		Long codigo = null;
 		
-		codigo = tapaServices.create(t);
+		try {
+			codigo = tapaServices.create(t);
+		} catch(IllegalStateException e) {
+			throw new PresentationException(e.getMessage(), HttpStatus.BAD_REQUEST);
+		}
 
 		
 		URI uri = ucb.path("/tapas/{codigo}").build(codigo);
@@ -64,7 +79,11 @@ public class TapaController {
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void delete(@PathVariable Long id) {
 		
-		tapaServices.delete(id);
+		try {
+			tapaServices.delete(id);
+		} catch(IllegalStateException e) {
+			throw new PresentationException("No se encuentra el producto con id [" + id + "]. No se ha podido eliminar.", HttpStatus.NOT_FOUND);
+		}
 		
 	}
 	
@@ -72,7 +91,11 @@ public class TapaController {
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void update(@RequestBody Tapa t) {
 		
-		tapaServices.update(t);
+		try {
+			tapaServices.update(t);
+		} catch(IllegalStateException e) {
+			throw new PresentationException(e.getMessage(), HttpStatus.NOT_FOUND);
+		}
 		
 	}
 }

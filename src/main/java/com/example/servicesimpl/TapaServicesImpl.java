@@ -1,6 +1,7 @@
 package com.example.servicesimpl;
 
 import java.util.List;
+
 import java.util.Optional;
 
 import javax.transaction.Transactional;
@@ -69,6 +70,11 @@ public class TapaServicesImpl implements TapaServices{
 		List<Tapa> tapas = tapaRepository.findAll();
 		System.err.println(tapas);
 		return tapas;
+	}
+	
+	@Override
+	public List<Tapa> getBetweenPriceRange(double min, double max) {
+		return tapaRepository.findByPrecioBetweenOrderByPrecioAsc(min, max);
 	}
 
 }
