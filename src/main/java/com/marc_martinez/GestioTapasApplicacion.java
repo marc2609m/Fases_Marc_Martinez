@@ -1,13 +1,13 @@
-package com.example.Fases_MarcMartinez;
+package com.marc_martinez;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class FasesMarcMartinezApplication {
+public class GestioTapasApplicacion {
 
 	public static void main(String[] args) {
-		SpringApplication.run(FasesMarcMartinezApplication.class, args);
+		SpringApplication.run(GestioTapasApplicacion.class, args);
 	}
 
 }
